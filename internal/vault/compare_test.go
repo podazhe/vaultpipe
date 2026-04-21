@@ -72,3 +72,20 @@ func TestCompareSecrets_BothEmpty(t *testing.T) {
 		t.Error("empty maps should have no differences")
 	}
 }
+
+func TestCompareSecrets_NilMaps(t *testing.T) {
+	r := CompareSecrets(nil, nil)
+	if r.HasDifferences() {
+		t.Error("nil maps should have no differences")
+	}
+
+	r = CompareSecrets(nil, map[string]string{"A": "1"})
+	if len(r.OnlyInRight) != 1 || r.OnlyInRight[0] != "A" {
+		t.Errorf("expected OnlyInRight=[A] when left is nil, got %v", r.OnlyInRight)
+	}
+
+	r = CompareSecrets(map[string]string{"A": "1"}, nil)
+	if len(r.OnlyInLeft) != 1 || r.OnlyInLeft[0] != "A" {
+		t.Errorf("expected OnlyInLeft=[A] when right is nil, got %v", r.OnlyInLeft)
+	}
+}
